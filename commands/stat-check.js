@@ -14,7 +14,7 @@ module.exports = {
                 .setRequired(true)
         ),
 	async execute(interaction) {
-        let response = await fetch(`https://tracker.gg/valorant/profile/riot/${encodeURIComponent(interaction.options.getString('username'))}/overview`)
+        let response = await fetch(`https://tracker.gg/valorant/profile/riot/${encodeURIComponent(interaction.options.getString('username').trim())}/overview`)
         let data = await response.text()
         const dom = new JSDOM(data);
         let ranks = dom.window.document.querySelectorAll(".rating-entry__rank-info")
