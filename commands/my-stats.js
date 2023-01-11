@@ -1,0 +1,28 @@
+const { SlashCommandBuilder } = require("discord.js");
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName("my-stats")
+		.setDescription("searches for your stats based of your nickname"),
+	async execute(interaction) {
+        await interaction.reply(`Searching for ${interaction.member.nickname}'s profile ....`);
+
+        let response = await fetch(`https://tracker.gg/valorant/profile/riot/${encodeURIComponent(interaction.member.nickname)}/overview`)
+        let data = await response.text()
+        const dom = new JSDOM(data);
+        let ranks = dom.window.document.querySelectorAll(".rating-entry__rank-info")
+        let discordResponse = ""
+
+        if(ranks.length === 0){
+            discordResponse = "Either this user doesnt exist on the tracker gg website or is privated \n If this is a real player my bad g your boy is to broke to pay for a offical valorant api key"
+        }else{
+            let currentRank = ranks[0].textContent.split("Rating")[1]
+            let peakRank = ranks[1].textContent.split("EPISODE")[0]
+            discordResponse = `Your current rating is ${currentRank} and your peak is ${peakRank}`
+        }
+		await interaction.followUp(discordResponse);
+	},
+};
